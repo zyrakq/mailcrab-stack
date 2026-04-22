@@ -1,0 +1,25 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: ${LOG_MAX_SIZE:-10m}
+    max-file: ${LOG_MAX_FILE:-3}
+    compress: ${LOG_COMPRESS:-true}
+services:
+  mailcrab:
+    image: ${IMAGE:-marlonb/mailcrab:latest}
+    container_name: mailcrab
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - ${SMTP_PORT:-1025}:${SMTP_PORT:-1025}
+      - ${HTTP_PORT:-1080}:${HTTP_PORT:-1080}
+    environment:
+      HTTP_HOST: ${HTTP_HOST:-0.0.0.0}
+      HTTP_PORT: ${HTTP_PORT:-1080}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      MAILCRAB_PREFIX: ${MAILCRAB_PREFIX:-}
+    volumes:
+      - mailcrab-data:/data
+volumes:
+  mailcrab-data:
+    name: mailcrab-data
